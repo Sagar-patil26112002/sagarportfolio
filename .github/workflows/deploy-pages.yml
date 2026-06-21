@@ -12,8 +12,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+      - name: Deploy to gh-pages
+        run: |
+          mkdir -p build
+          cp index.html styles.css README.md Sagar_Resume_1.5YOE_Pune.pdf build/ 2>/dev/null || true
+          mkdir -p build/.github/workflows
+          cp .github/workflows/deploy-pages.yml build/.github/workflows/ 2>/dev/null || true
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout --orphan gh-pages
+          git rm -rf .
+          cp -r build/* .
+          git add .
+          git commit -m "Deploy site" || true
+          git push -f origin gh-pages
